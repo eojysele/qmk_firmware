@@ -135,15 +135,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
         case ALT_SFT_OR_CAPS:
             CH_LAYOUT_OR_CAPS(record,
-                    register_code(KC_LALT);
-                    tap_code(KC_LSFT);
-                    unregister_code(KC_LALT);
+                register_code(KC_LALT);
+                wait_ms(10);
+                tap_code(KC_LSFT);
+                wait_ms(10);
+                unregister_code(KC_LALT);
             );
             break;
         case CTL_SPC_OR_CAPS:
             CH_LAYOUT_OR_CAPS(record,
                 register_code(KC_LCTL);
+                wait_ms(10);
                 tap_code(KC_SPC);
+                wait_ms(10);
                 unregister_code(KC_LCTL);
             );
             break;
