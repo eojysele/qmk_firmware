@@ -16,6 +16,33 @@
 
 #include QMK_KEYBOARD_H
 
+#define CH_HOLD_TIME 1000
+
+#define ON_PRESS(record, code) \
+    do { \
+        if ((record)->event.pressed) { \
+            code; \
+        } \
+        return false; \
+    } while (0)
+
+
+#define CH_LAYOUT_OR_CAPS(record, code) \
+    do { \
+        static uint16_t ch_timer = 0; \
+        if (record->event.pressed) { \
+            ch_timer = timer_read(); \
+            return false; \
+        } else { \
+            if (timer_elapsed(ch_timer) > CH_HOLD_TIME) { \
+                tap_code(KC_CAPS); \
+            } else { \
+                code; \
+            } \
+            return false; \
+        } \
+    } while (0)
+
 enum __layers {
     WIN_0,
     WIN_1,
@@ -36,63 +63,89 @@ enum custom_keycodes {
     L_WHITE,
     L_CYCLE_LR,
     L_CYCLE_A,
-    WIN_LAYOUT,
-    MAC_LAYOUT
+    ALT_SFT_OR_CAPS,
+    CTL_SPC_OR_CAPS
 };
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!record->event.pressed) return true;
-
     switch (keycode) {
         case L_RED:
-            rgb_matrix_sethsv(HSV_RED);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_RED);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_ORANGE:
-            rgb_matrix_sethsv(HSV_ORANGE);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_ORANGE);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_YELLOW:
-            rgb_matrix_sethsv(HSV_YELLOW);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_YELLOW);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_GREEN:
-            rgb_matrix_sethsv(HSV_GREEN);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_GREEN);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_CYAN:
-            rgb_matrix_sethsv(HSV_CYAN);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_CYAN);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_BLUE:
-            rgb_matrix_sethsv(HSV_BLUE);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_BLUE);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_PURPLE:
-            rgb_matrix_sethsv(HSV_PURPLE);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_PURPLE);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_WHITE:
-            rgb_matrix_sethsv(HSV_WHITE);
-            rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_WHITE);
+                rgb_matrix_mode(RGB_MATRIX_SOLID_COLOR);
+            );
             break;
         case L_CYCLE_LR:
-            rgb_matrix_sethsv(HSV_RED);
-            rgb_matrix_mode(RGB_MATRIX_CYCLE_LEFT_RIGHT);
-            rgb_matrix_set_speed(RGB_MATRIX_DEFAULT_SPD);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_RED);
+                rgb_matrix_mode(RGB_MATRIX_CYCLE_LEFT_RIGHT);
+                rgb_matrix_set_speed(RGB_MATRIX_DEFAULT_SPD);
+            );
             break;
         case L_CYCLE_A:
-            rgb_matrix_sethsv(HSV_RED);
-            rgb_matrix_mode(RGB_MATRIX_CYCLE_ALL);
-            rgb_matrix_set_speed(0);
+            ON_PRESS(record,
+                rgb_matrix_sethsv(HSV_RED);
+                rgb_matrix_mode(RGB_MATRIX_CYCLE_ALL);
+                rgb_matrix_set_speed(0);
+            );
             break;
 
-        case WIN_LAYOUT:
-            tap_code16(LALT(KC_LSFT));
+        case ALT_SFT_OR_CAPS:
+            CH_LAYOUT_OR_CAPS(record,
+                    register_code(KC_LALT);
+                    tap_code(KC_LSFT);
+                    unregister_code(KC_LALT);
+            );
             break;
-        case MAC_LAYOUT:
-            tap_code16(LCTL(KC_SPACE));
+        case CTL_SPC_OR_CAPS:
+            CH_LAYOUT_OR_CAPS(record,
+                register_code(KC_LCTL);
+                tap_code(KC_SPC);
+                unregister_code(KC_LCTL);
+            );
             break;
     }
 
@@ -103,18 +156,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [WIN_0] = LAYOUT_tkl_ansi(
-        KC_ESC,     KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,             KC_MUTE, KC_VOLD, KC_VOLU,
-        KC_GRV,     KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,   KC_INS,  KC_HOME, KC_PGUP,
-        KC_TAB,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,   KC_DEL,  KC_END,  KC_PGDN,
-        WIN_LAYOUT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
-        KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,                   KC_RSFT,            KC_UP,
+        KC_ESC,          KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,             KC_MUTE, KC_VOLD, KC_VOLU,
+        KC_GRV,          KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,   KC_INS,  KC_HOME, KC_PGUP,
+        KC_TAB,          KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,   KC_DEL,  KC_END,  KC_PGDN,
+        ALT_SFT_OR_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
+        KC_LSFT,         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,                   KC_RSFT,            KC_UP,
         KC_LCTL, KC_LGUI, KC_LALT,                   KC_SPC,                             KC_RALT, KC_RGUI, MO(WIN_1),       KC_RCTL,       KC_LEFT, KC_DOWN, KC_RGHT),
 
     [WIN_1] = LAYOUT_tkl_ansi(
         RM_TOGG, RM_VALD, RM_VALU, RM_SPDD, RM_SPDU, RM_PREV, RM_NEXT, _______, _______, _______,_______,  _______, _______,              KC_MPLY, KC_MPRV, KC_MNXT,
         L_CYCLE_LR, L_RED, L_ORANGE, L_YELLOW, L_GREEN, L_CYAN, L_BLUE, L_PURPLE, L_WHITE, L_CYCLE_A, _______, _______, _______, _______, KC_PSCR, KC_SCRL, KC_PAUS,
         _______, _______,PDF(WIN_0),_______, _______, _______, _______, _______, _______, _______,_______,_______, _______, _______,      _______, _______, _______,
-        KC_CAPS, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, _______, _______, _______, _______, _______, PDF(MAC_0), _______, _______, _______,                   _______,           _______,
         _______, _______, _______,                   _______,                            _______, _______, _______,          _______,     _______, _______, _______),
 
@@ -127,18 +180,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______,                   _______,                            _______, _______, _______,       _______,    _______, _______, _______),
 
     [MAC_0] = LAYOUT_tkl_ansi(
-        KC_ESC,     KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,           KC_MUTE, KC_VOLD, KC_VOLU,
-        KC_GRV,     KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_INS,  KC_HOME, KC_PGUP,
-        KC_TAB,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, KC_DEL,  KC_END,  KC_PGDN,
-        MAC_LAYOUT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
-        KC_LSFT,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,                   KC_RSFT,          KC_UP,
+        KC_ESC,          KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,           KC_MUTE, KC_VOLD, KC_VOLU,
+        KC_GRV,          KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_INS,  KC_HOME, KC_PGUP,
+        KC_TAB,          KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, KC_DEL,  KC_END,  KC_PGDN,
+        CTL_SPC_OR_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
+        KC_LSFT,         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,                   KC_RSFT,          KC_UP,
         KC_LCTL,    KC_LALT, KC_LGUI,                   KC_SPC,                             KC_RGUI, KC_RALT, MO(MAC_1),       KC_RCTL,  KC_LEFT, KC_DOWN,   KC_RGHT),
 
     [MAC_1] = LAYOUT_tkl_ansi(
         RM_TOGG, RM_VALD, RM_VALU, RM_SPDD, RM_SPDU, RM_PREV, RM_NEXT, _______, _______, _______,_______,  _______, _______,              KC_MPLY, KC_MPRV, KC_MNXT,
         L_CYCLE_LR, L_RED, L_ORANGE, L_YELLOW, L_GREEN, L_CYAN, L_BLUE, L_PURPLE, L_WHITE, L_CYCLE_A, _______, _______, _______, _______, KC_PSCR, KC_SCRL, KC_PAUS,
         _______, _______,PDF(WIN_0),_______, _______, _______, _______, _______, _______, _______,_______,_______, _______, _______,      _______, _______, _______,
-        KC_CAPS, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, _______, _______, _______, _______, _______, PDF(MAC_0), _______, _______, _______,                   _______,           _______,
         _______, _______, _______,                   _______,                            _______, _______, _______,          _______,     _______, _______, _______),
 
