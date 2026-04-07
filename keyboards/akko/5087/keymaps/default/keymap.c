@@ -36,6 +36,11 @@
         } else { \
             if (timer_elapsed(ch_timer) > CH_HOLD_TIME) { \
                 tap_code(KC_CAPS); \
+                if (host_keyboard_led_state().caps_lock) { \
+                    rgb_matrix_set_color(50, 255, 0, 0); \
+                } else { \
+                    rgb_matrix_set_color(50, 0, 0, 0); \
+                } \
             } else { \
                 code; \
             } \
