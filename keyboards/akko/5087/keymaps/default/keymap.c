@@ -68,8 +68,9 @@ enum custom_keycodes {
     L_WHITE,
     L_CYCLE_LR,
     L_CYCLE_A,
-    ALT_SFT_OR_CAPS,
-    CTL_SPC_OR_CAPS
+    ALT_SFT,
+    CTL_SPC,
+    CAPS_WITH_LED
 };
 
 
@@ -138,8 +139,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             );
             break;
 
-        case ALT_SFT_OR_CAPS:
-            CH_LAYOUT_OR_CAPS(record,
+        case ALT_SFT:
+            ON_PRESS(record,
                 register_code(KC_LALT);
                 wait_ms(5);
                 tap_code(KC_LSFT);
@@ -147,13 +148,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 unregister_code(KC_LALT);
             );
             break;
-        case CTL_SPC_OR_CAPS:
-            CH_LAYOUT_OR_CAPS(record,
+        case CTL_SPC:
+            ON_PRESS(record,
                 register_code(KC_LCTL);
                 wait_ms(5);
                 tap_code(KC_SPC);
                 wait_ms(5);
                 unregister_code(KC_LCTL);
+            );
+            break;
+        case CAPS_WITH_LED:
+            ON_PRESS(record,
+                    tap_code(KC_CAPS);
+                    if (host_keyboard_led_state().caps_lock) {
+                        rgb_matrix_set_color(50, 255, 0, 0);
+                    } else {
+                        rgb_matrix_set_color(50, 0, 0, 0);
+                    }
             );
             break;
     }
@@ -168,7 +179,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,          KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,             KC_MUTE, KC_VOLD, KC_VOLU,
         KC_GRV,          KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,   KC_INS,  KC_HOME, KC_PGUP,
         KC_TAB,          KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,   KC_DEL,  KC_END,  KC_PGDN,
-        ALT_SFT_OR_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
+        ALT_SFT,         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
         KC_LSFT,         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,                   KC_RSFT,            KC_UP,
         KC_LCTL, KC_LGUI, KC_LALT,                   KC_SPC,                             KC_RALT, KC_RGUI, MO(WIN_1),       KC_RCTL,       KC_LEFT, KC_DOWN, KC_RGHT),
 
@@ -176,7 +187,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RM_TOGG, RM_VALD, RM_VALU, RM_SPDD, RM_SPDU, RM_PREV, RM_NEXT, _______, _______, _______,_______,  _______, _______,              KC_MPLY, KC_MPRV, KC_MNXT,
         L_CYCLE_LR, L_RED, L_ORANGE, L_YELLOW, L_GREEN, L_CYAN, L_BLUE, L_PURPLE, L_WHITE, L_CYCLE_A, _______, _______, _______, _______, KC_PSCR, KC_SCRL, KC_PAUS,
         _______, _______,PDF(WIN_0),_______, _______, _______, _______, _______, _______, _______,_______,_______, _______, _______,      _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
+        CAPS_WITH_LED, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, _______, _______, _______, _______, _______, PDF(MAC_0), _______, _______, _______,                   _______,           _______,
         _______, _______, _______,                   _______,                            _______, _______, _______,          _______,     _______, _______, _______),
 
@@ -192,7 +203,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_ESC,          KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,           KC_MUTE, KC_VOLD, KC_VOLU,
         KC_GRV,          KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_INS,  KC_HOME, KC_PGUP,
         KC_TAB,          KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, KC_DEL,  KC_END,  KC_PGDN,
-        CTL_SPC_OR_CAPS, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
+        CTL_SPC,         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
         KC_LSFT,         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,                   KC_RSFT,          KC_UP,
         KC_LCTL,    KC_LALT, KC_LGUI,                   KC_SPC,                             KC_RGUI, KC_RALT, MO(MAC_1),       KC_RCTL,  KC_LEFT, KC_DOWN,   KC_RGHT),
 
@@ -200,7 +211,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         RM_TOGG, RM_VALD, RM_VALU, RM_SPDD, RM_SPDU, RM_PREV, RM_NEXT, _______, _______, _______,_______,  _______, _______,              KC_MPLY, KC_MPRV, KC_MNXT,
         L_CYCLE_LR, L_RED, L_ORANGE, L_YELLOW, L_GREEN, L_CYAN, L_BLUE, L_PURPLE, L_WHITE, L_CYCLE_A, _______, _______, _______, _______, KC_PSCR, KC_SCRL, KC_PAUS,
         _______, _______,PDF(WIN_0),_______, _______, _______, _______, _______, _______, _______,_______,_______, _______, _______,      _______, _______, _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
+        CAPS_WITH_LED, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, _______, _______, _______, _______, _______, _______, PDF(MAC_0), _______, _______, _______,                   _______,           _______,
         _______, _______, _______,                   _______,                            _______, _______, _______,          _______,     _______, _______, _______),
 
