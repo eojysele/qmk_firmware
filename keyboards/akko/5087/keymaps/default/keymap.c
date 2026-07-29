@@ -26,28 +26,6 @@
         return false; \
     } while (0)
 
-
-#define CH_LAYOUT_OR_CAPS(record, code) \
-    do { \
-        static uint16_t ch_timer = 0; \
-        if (record->event.pressed) { \
-            ch_timer = timer_read(); \
-            return false; \
-        } else { \
-            if (timer_elapsed(ch_timer) > CH_HOLD_TIME) { \
-                tap_code(KC_CAPS); \
-                if (host_keyboard_led_state().caps_lock) { \
-                    rgb_matrix_set_color(50, 255, 0, 0); \
-                } else { \
-                    rgb_matrix_set_color(50, 0, 0, 0); \
-                } \
-            } else { \
-                code; \
-            } \
-            return false; \
-        } \
-    } while (0)
-
 enum __layers {
     WIN_0,
     WIN_1,
@@ -142,18 +120,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case ALT_SFT:
             ON_PRESS(record,
                 register_code(KC_LALT);
-                wait_ms(5);
+                wait_ms(50);
                 tap_code(KC_LSFT);
-                wait_ms(5);
+                wait_ms(50);
                 unregister_code(KC_LALT);
             );
             break;
         case CTL_SPC:
             ON_PRESS(record,
                 register_code(KC_LCTL);
-                wait_ms(5);
+                wait_ms(50);
                 tap_code(KC_SPC);
-                wait_ms(5);
+                wait_ms(50);
                 unregister_code(KC_LCTL);
             );
             break;
